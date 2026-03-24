@@ -10,7 +10,7 @@ body, .table-alive, .alive-rectangles, .table-alive th, .table-alive td {
   font-family: 'Gonstet', 'Montserrat', Arial, sans-serif !important;
 }
 
-/* ================= ENTRY ANIMATION ================= */
+/* ================= ENTRY ================= */
 @keyframes slideInRight {
   0% {
     transform: translateX(100%);
@@ -22,20 +22,35 @@ body, .table-alive, .alive-rectangles, .table-alive th, .table-alive td {
   }
 }
 
+/* 🔥 EXIT ANIMATION */
+@keyframes slideOutRight {
+  0% {
+    transform: translateX(0);
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+}
+
 .table-container {
   position: absolute;
   right: 0;
   top: 0;
-
-  /* 🔥 PERFORMANCE FIX */
   will-change: transform;
 }
-/* animation alag class me */
+
+/* only when needed */
 .table-container.slide-in {
   animation: slideInRight 0.8s ease forwards;
 }
 
-/* ================= MAIN TABLE ================= */
+.table-container.slide-out {
+  animation: slideOutRight 0.6s ease forwards;
+}
+
+/* ================= TABLE ================= */
 .table-alive {
   border-collapse: separate;
   border-spacing: 0;
@@ -67,23 +82,24 @@ body, .table-alive, .alive-rectangles, .table-alive th, .table-alive td {
 .table-alive thead tr {
   background: linear-gradient(90deg, #ffd700, #ff8c00);
   height: 48px;
+  position: relative;
 }
 
-/* 🔥 SHINE EFFECT */
+/* 🔥 SHINE */
 .table-alive thead tr::after {
   content: "";
   position: absolute;
   top: 0;
   left: -100%;
   width: 50%;
-  height: 48px;
+  height: 100%;
   background: linear-gradient(
     120deg,
     transparent,
     rgba(255,255,255,0.5),
     transparent
   );
-  animation: shineMove 3s infinite;
+  animation: shineMove 3s linear infinite;
 }
 
 @keyframes shineMove {
@@ -110,23 +126,7 @@ body, .table-alive, .alive-rectangles, .table-alive th, .table-alive td {
   height: 50px;
   background: rgba(0, 0, 0, 0.25);
   backdrop-filter: blur(6px);
-  transition: all 0.3s ease;
-}
-
-/* 🔥 row entry animation */
-.table-alive tbody tr.animate-row {
-  animation: fadeRow 0.5s ease forwards;
-}
-
-@keyframes fadeRow {
-  from {
-    opacity: 0;
-    transform: translateX(30px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
+  transition: background 0.3s ease;
 }
 
 .table-alive tbody tr:nth-child(even) {
@@ -170,7 +170,7 @@ body, .table-alive, .alive-rectangles, .table-alive th, .table-alive td {
   transform: scale(1.1);
 }
 
-/* ================= ALIVE BARS ================= */
+/* ================= ALIVE ================= */
 .alive-rectangles {
   display: flex;
   gap: 3px;
@@ -180,7 +180,6 @@ body, .table-alive, .alive-rectangles, .table-alive th, .table-alive td {
   position: relative;
 }
 
-/* 🔥 ALIVE BAR ANIMATION */
 .alive-rect-bar {
   width: 5px;
   height: 30px;
@@ -189,15 +188,6 @@ body, .table-alive, .alive-rectangles, .table-alive th, .table-alive td {
   border: 1px solid #ffb347;
 
   box-shadow: 0 0 6px rgba(255, 200, 0, 0.6);
-}
-
-@keyframes barPop {
-  from {
-    transform: scaleY(0);
-  }
-  to {
-    transform: scaleY(1);
-  }
 }
 
 .alive-rect-bar.dead {
@@ -215,14 +205,14 @@ body, .table-alive, .alive-rectangles, .table-alive th, .table-alive td {
   border-top: 3px solid #ff3c00;
 }
 
-/* ================= BLINK ================= */
+/* ================= BLUEZONE (FIXED SMOOTH) ================= */
 @keyframes blink-blue-bg {
-  0%, 100% { background-color: inherit; }
-  50% { background-color: rgba(255, 200, 0, 0.25); }
+  0%, 100% { background-color: rgba(0,0,0,0.25); }
+  50% { background-color: rgba(255, 200, 0, 0.2); }
 }
 
 tr.bluezone-blink {
-  animation: blink-blue-bg 1s linear infinite !important;
+  animation: blink-blue-bg 1.4s ease-in-out infinite;
 }
 
 /* ================= BODY ================= */
