@@ -41,24 +41,38 @@ html, body {
   min-width: 520px;
   border-radius: 12px;
   border: 2px solid var(--gold-bright);
+  transform-origin: center top;
 }
 
-/* Animations */
-@keyframes slideIn {
-  from { opacity: 0; transform: translateY(-80px); }
-  to { opacity: 1; transform: translateY(0); }
+/* 🔥 SLIDE IN (PRO) */
+@keyframes slideInFromTop {
+  0% {
+    opacity: 0;
+    transform: translateY(-100px) scale(0.95);
+    filter: blur(5px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    filter: blur(0);
+  }
 }
 
-@keyframes slideOut {
-  to { opacity: 0; transform: translateY(-80px); }
+/* 🔥 SLIDE OUT */
+@keyframes slideOutToTop {
+  100% {
+    opacity: 0;
+    transform: translateY(-100px) scale(0.95);
+    filter: blur(5px);
+  }
 }
 
 .elim-card.slide-in {
-  animation: slideIn 0.6s ease forwards;
+  animation: slideInFromTop 0.7s ease forwards;
 }
 
 .elim-card.slide-out {
-  animation: slideOut 0.6s ease forwards;
+  animation: slideOutToTop 0.6s ease forwards;
 }
 
 /* Layout */
@@ -69,33 +83,66 @@ html, body {
   gap: 20px;
 }
 
+/* Logo */
 .team-logo {
-  width: 100px;
-  height: 100px;
+  width: 110px;
+  height: 110px;
   border-radius: 10px;
   border: 2px solid var(--gold-warm);
   background: var(--shadow-brown);
   padding: 6px;
+  opacity: 0;
+  transform: scale(0.8);
 }
 
+@keyframes logoPop {
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.team-logo.reveal {
+  animation: logoPop 0.4s ease forwards;
+}
+
+/* Text */
 .text-content {
   display: flex;
   flex-direction: column;
   gap: 6px;
 }
 
-/* Text */
 .eliminated-text {
   font-family: 'AmericanCaptain';
   font-size: 18px;
   color: var(--gold-bright);
   letter-spacing: 2px;
+  opacity: 0;
 }
 
 .team-name {
   font-size: 26px;
   font-weight: 800;
   color: var(--text-light);
+  opacity: 0;
+  transform: translateY(15px);
+}
+
+/* Text Animations */
+@keyframes fadeInUp {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.eliminated-text.reveal {
+  animation: fadeInUp 0.4s ease forwards;
+}
+
+.team-name.reveal {
+  animation: fadeInUp 0.4s ease forwards;
 }
 
 /* ================= FINISHES ================= */
@@ -106,17 +153,15 @@ html, body {
   transform: translateY(10px);
 }
 
-/* 🔥 Gold number */
+/* 🔥 GOLD NUMBER */
 .team-finishes span {
   color: var(--gold-bright);
   font-weight: 900;
-  text-shadow: 0 0 6px rgba(242,169,0,0.8);
-}
-
-@keyframes fadeUp {
-  to { opacity: 1; transform: translateY(0); }
+  text-shadow: 
+    0 0 6px rgba(242,169,0,0.8),
+    0 0 12px rgba(242,169,0,0.5);
 }
 
 .team-finishes.reveal {
-  animation: fadeUp 0.4s ease forwards;
+  animation: fadeInUp 0.4s ease forwards;
 }
