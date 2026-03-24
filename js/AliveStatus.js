@@ -135,17 +135,37 @@ function fetchData() {
   fetch(gvizUrl)
     .then(res => res.text())
     .then(text => {
+
       const json = JSON.parse(
         text.substring(text.indexOf('{'), text.lastIndexOf('}') + 1)
       );
 
       const table = parseGvizTable(json);
 
+      // ✅ HIDE LOADING
+      document.getElementById('loading').style.display = 'none';
+      document.getElementById('error').style.display = 'none';
+
+      // ❌ No data case
+      if (!table.headers.length || !table.rows.length) {
+        document.getElementById('nodata').style.display = '';
+        document.getElementById('table-root').style.display = 'none';
+        return;
+      }
+
+      // ✅ SHOW TABLE
+      document.getElementById('nodata').style.display = 'none';
+      document.getElementById('table-root').style.display = '';
+
       const shouldShow = updateVisibility(table);
       renderTable(table, shouldShow);
     })
     .catch(() => {
-      console.log("Sheet load error");
+      // ❌ ERROR SHOW
+      document.getElementById('loading').style.display = 'none';
+      document.getElementById('error').style.display = '';
+      document.getElementById('error').textContent = 'Failed to load data';
+      document.getElementById('table-root').style.display = 'none';
     });
 }
 
