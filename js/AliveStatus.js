@@ -83,8 +83,17 @@ function renderTable(table, shouldShow) {
   displayRows.forEach(row => {
     const isBluezone = String(row[bluezoneIdx]).toLowerCase() === 'true';
 
-    html += `<tr${isBluezone ? ' class="bluezone-blink"' : ''}>`;
-    html += `<td>${row.rank}</td>`;
+let rowClass = "";
+
+if (isVisible === null) {
+  rowClass = "animate-row"; // only first load animation
+}
+
+if (isBluezone) {
+  rowClass += " bluezone-blink";
+}
+
+html += `<tr class="${rowClass.trim()}">`;    html += `<td>${row.rank}</td>`;
     html += `<td class="team">
       <img src="${row[teamLogoIdx]}" onerror="this.style.display='none'">
       <span>${row[teamInitialIdx]}</span>
