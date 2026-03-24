@@ -10,13 +10,23 @@ body, .table-alive, .alive-rectangles, .table-alive th, .table-alive td {
   font-family: 'Gonstet', 'Montserrat', Arial, sans-serif !important;
 }
 
-/* 🔥 BLINK EFFECT */
-@keyframes blink-blue-bg {
-  0%, 100% { background-color: inherit; }
-  50% { background-color: rgba(255, 200, 0, 0.25); }
+/* ================= ENTRY ANIMATION ================= */
+@keyframes slideInRight {
+  0% {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  100% {
+    transform: translateX(0);
+    opacity: 1;
+  }
 }
-tr.bluezone-blink {
-  animation: blink-blue-bg 1s linear infinite !important;
+
+.table-container {
+  position: absolute;
+  right: 0;
+  top: 0;
+  animation: slideInRight 0.8s ease forwards;
 }
 
 /* ================= MAIN TABLE ================= */
@@ -24,9 +34,7 @@ tr.bluezone-blink {
   border-collapse: separate;
   border-spacing: 0;
   width: 360px;
-  margin: 40px auto;
 
-  /* 🔥 POSTER GRADIENT */
   background: linear-gradient(
     180deg,
     #ffb347 0%,
@@ -44,7 +52,6 @@ tr.bluezone-blink {
 
   position: relative;
 
-  /* 🔥 GLOW */
   box-shadow: 
     0 0 20px rgba(255,140,0,0.6),
     inset 0 0 15px rgba(255,255,255,0.1);
@@ -56,6 +63,29 @@ tr.bluezone-blink {
   height: 48px;
 }
 
+/* 🔥 SHINE EFFECT */
+.table-alive thead tr::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 50%;
+  height: 48px;
+  background: linear-gradient(
+    120deg,
+    transparent,
+    rgba(255,255,255,0.5),
+    transparent
+  );
+  animation: shineMove 3s infinite;
+}
+
+@keyframes shineMove {
+  0% { left: -100%; }
+  100% { left: 150%; }
+}
+
+/* ================= TEXT ================= */
 .table-alive th {
   color: #ffffff;
   text-align: center;
@@ -72,19 +102,31 @@ tr.bluezone-blink {
 /* ================= ROWS ================= */
 .table-alive tbody tr {
   height: 50px;
-
-  /* glass look */
   background: rgba(0, 0, 0, 0.25);
   backdrop-filter: blur(6px);
-
   transition: all 0.3s ease;
+}
+
+/* 🔥 row entry animation */
+.table-alive tbody tr {
+  animation: fadeRow 0.5s ease forwards;
+}
+
+@keyframes fadeRow {
+  from {
+    opacity: 0;
+    transform: translateX(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
 }
 
 .table-alive tbody tr:nth-child(even) {
   background: rgba(0, 0, 0, 0.35);
 }
 
-/* 🔥 hover effect */
 .table-alive tbody tr:hover {
   background: rgba(255, 140, 0, 0.25);
 }
@@ -94,10 +136,9 @@ tr.bluezone-blink {
   text-align: center;
   font-weight: 600;
   color: #ffffff;
-  height: 50px;
 }
 
-/* TEAM COLUMN */
+/* TEAM */
 .table-alive td.team {
   display: flex;
   align-items: center;
@@ -116,7 +157,11 @@ tr.bluezone-blink {
   background: rgba(0,0,0,0.3);
   border: 2px solid #ffd700;
 
-  flex-shrink: 0;
+  transition: transform 0.3s ease;
+}
+
+.table-alive td.team img:hover {
+  transform: scale(1.1);
 }
 
 /* ================= ALIVE BARS ================= */
@@ -129,7 +174,7 @@ tr.bluezone-blink {
   position: relative;
 }
 
-/* 🔥 ALIVE BAR */
+/* 🔥 ALIVE BAR ANIMATION */
 .alive-rect-bar {
   width: 5px;
   height: 30px;
@@ -138,16 +183,26 @@ tr.bluezone-blink {
   border: 1px solid #ffb347;
 
   box-shadow: 0 0 6px rgba(255, 200, 0, 0.6);
+
+  animation: barPop 0.3s ease;
 }
 
-/* DEAD BAR */
+@keyframes barPop {
+  from {
+    transform: scaleY(0);
+  }
+  to {
+    transform: scaleY(1);
+  }
+}
+
 .alive-rect-bar.dead {
   background: rgba(0,0,0,0.4);
   border: 1px solid #333;
   box-shadow: none;
 }
 
-/* STRIKE LINE */
+/* STRIKE */
 .alive-rect-strike {
   position: absolute;
   left: 0;
@@ -156,33 +211,20 @@ tr.bluezone-blink {
   border-top: 3px solid #ff3c00;
 }
 
-/* ================= CONTAINER ================= */
+/* ================= BLINK ================= */
+@keyframes blink-blue-bg {
+  0%, 100% { background-color: inherit; }
+  50% { background-color: rgba(255, 200, 0, 0.25); }
+}
+
+tr.bluezone-blink {
+  animation: blink-blue-bg 1s linear infinite !important;
+}
+
+/* ================= BODY ================= */
 body {
   background: transparent;
   margin: 0;
   padding: 0;
   overflow: hidden;
-}
-
-.table-container {
-  position: absolute;
-  right: 0;
-  top: 0;
-  transition: transform 0.8s ease-in-out;
-}
-
-.slide-in {
-  transform: translateX(0);
-}
-
-.slide-out {
-  transform: translateX(100%);
-}
-
-/* ================= STATUS TEXT ================= */
-#loading, #error, #nodata {
-  color: #ffffff;
-  text-align: center;
-  margin-top: 40px;
-  font-size: 22px;
 }
