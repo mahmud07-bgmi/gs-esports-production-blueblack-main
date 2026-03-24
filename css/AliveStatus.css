@@ -3,92 +3,123 @@
 @font-face {
   font-family: 'Gonstet';
   src: url('../font/gonstet.ttf') format('truetype');
-  font-weight: normal;
-  font-style: normal;
 }
 
+/* FONT */
 body, .table-alive, .alive-rectangles, .table-alive th, .table-alive td {
   font-family: 'Gonstet', 'Montserrat', Arial, sans-serif !important;
 }
 
+/* 🔥 BLINK EFFECT */
 @keyframes blink-blue-bg {
   0%, 100% { background-color: inherit; }
-  50% { background-color: #F2A90044; }
+  50% { background-color: rgba(255, 200, 0, 0.25); }
 }
 tr.bluezone-blink {
   animation: blink-blue-bg 1s linear infinite !important;
 }
 
+/* ================= MAIN TABLE ================= */
 .table-alive {
   border-collapse: separate;
   border-spacing: 0;
   width: 360px;
   margin: 40px auto;
-  background: #120A05;
-  color: #F2F2F2;
-  font-family: 'Montserrat', Arial, sans-serif;
+
+  /* 🔥 POSTER GRADIENT */
+  background: linear-gradient(
+    180deg,
+    #ffb347 0%,
+    #ff8c00 40%,
+    #ff5e00 70%,
+    #c84e00 100%
+  );
+
+  color: #ffffff;
   font-size: 18px;
   overflow: hidden;
-  border: 2px solid #F2A900;
+
+  border: 2px solid #ffd700;
+  border-radius: 14px;
+
   position: relative;
+
+  /* 🔥 GLOW */
+  box-shadow: 
+    0 0 20px rgba(255,140,0,0.6),
+    inset 0 0 15px rgba(255,255,255,0.1);
 }
+
+/* ================= HEADER ================= */
 .table-alive thead tr {
-  background: linear-gradient(90deg, #F2A900 0%, #C87400 100%);
+  background: linear-gradient(90deg, #ffd700, #ff8c00);
   height: 48px;
 }
+
 .table-alive th {
-  color: #F2F2F2;
+  color: #ffffff;
   text-align: center;
   font-weight: 700;
   letter-spacing: 1px;
-  border: none;
-  padding: 0;
-  vertical-align: middle;
   font-size: 17px;
 }
+
 .table-alive th.team {
   text-align: left;
   padding-left: 16px;
 }
+
+/* ================= ROWS ================= */
 .table-alive tbody tr {
   height: 50px;
-  background: #1A1009;
-  transition: background 0.3s;
+
+  /* glass look */
+  background: rgba(0, 0, 0, 0.25);
+  backdrop-filter: blur(6px);
+
+  transition: all 0.3s ease;
 }
+
 .table-alive tbody tr:nth-child(even) {
-  background: #2A160A;
+  background: rgba(0, 0, 0, 0.35);
 }
+
+/* 🔥 hover effect */
+.table-alive tbody tr:hover {
+  background: rgba(255, 140, 0, 0.25);
+}
+
+/* ================= CELLS ================= */
 .table-alive td {
   text-align: center;
   font-weight: 600;
-  border: none;
-  background: none;
-  z-index: 2;
-  position: relative;
-  padding: 0;
-  vertical-align: middle;
-  color: #F2A900;
+  color: #ffffff;
   height: 50px;
 }
+
+/* TEAM COLUMN */
 .table-alive td.team {
   display: flex;
   align-items: center;
   gap: 12px;
-  padding-left: 16px;
-  padding-right: 16px;
+  padding: 0 16px;
   text-align: left;
-  color: #F2F2F2;
-  height: 50px;
 }
+
+/* LOGO */
 .table-alive td.team img {
   width: 32px;
   height: 32px;
   border-radius: 6px;
   object-fit: contain;
-  background: #2A160A;
-  border: 2px solid #E69500;
+
+  background: rgba(0,0,0,0.3);
+  border: 2px solid #ffd700;
+
   flex-shrink: 0;
 }
+
+/* ================= ALIVE BARS ================= */
 .alive-rectangles {
   display: flex;
   gap: 3px;
@@ -96,50 +127,62 @@ tr.bluezone-blink {
   justify-content: center;
   height: 30px;
   position: relative;
-  padding: 0 8px;
 }
+
+/* 🔥 ALIVE BAR */
 .alive-rect-bar {
   width: 5px;
   height: 30px;
-  background: #F2A900;
-  border: 1px solid #E69500;
+
+  background: linear-gradient(180deg, #ffd700, #ff8c00);
+  border: 1px solid #ffb347;
+
+  box-shadow: 0 0 6px rgba(255, 200, 0, 0.6);
 }
+
+/* DEAD BAR */
 .alive-rect-bar.dead {
-  background: #2A160A;
-  border: 1px solid #1A1009;
+  background: rgba(0,0,0,0.4);
+  border: 1px solid #333;
+  box-shadow: none;
 }
+
+/* STRIKE LINE */
 .alive-rect-strike {
   position: absolute;
   left: 0;
   right: 0;
   top: 50%;
-  height: 0;
-  border-top: 3px solid #C87400;
-  z-index: 2;
+  border-top: 3px solid #ff3c00;
 }
+
+/* ================= CONTAINER ================= */
 body {
   background: transparent;
-  min-height: 100vh;
   margin: 0;
   padding: 0;
   overflow: hidden;
 }
+
 .table-container {
   position: absolute;
   right: 0;
   top: 0;
   transition: transform 0.8s ease-in-out;
 }
+
 .slide-in {
   transform: translateX(0);
 }
+
 .slide-out {
   transform: translateX(100%);
 }
+
+/* ================= STATUS TEXT ================= */
 #loading, #error, #nodata {
-  color: #F2F2F2;
-  font-family: 'Montserrat', Arial, sans-serif;
+  color: #ffffff;
   text-align: center;
   margin-top: 40px;
   font-size: 22px;
-} 
+}
