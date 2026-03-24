@@ -29,7 +29,7 @@ function showCard(data) {
   <div id="elim-card" class="elim-card slide-in">
     <div class="elim-content">
 
-      <img src="${data.logo}" class="team-logo">
+     <img src="${data.logo}" class="team-logo" onerror="this.style.display='none'">
 
       <div class="text-content">
         <div class="eliminated-text">TEAM ELIMINATED</div>
