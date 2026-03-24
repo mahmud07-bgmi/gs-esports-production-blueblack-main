@@ -1,6 +1,5 @@
 // CONFIG
 const SHEET_URL = 'https://docs.google.com/spreadsheets/d/1gyzPFtG3ubxzrqGEtQI-dr4aiExDU6Fx0tzFS2W4iG8/';
-let lastHTML = "";
 let isVisible = null;
 
 // ================= URL =================
@@ -21,7 +20,7 @@ function parseGvizTable(json) {
   return { headers, rows };
 }
 
-// ================= ALIVE BARS =================
+// ================= ALIVE =================
 function createAliveRectangles(count) {
   const total = 4;
   const isEliminated = count === 0;
@@ -39,9 +38,25 @@ function createAliveRectangles(count) {
   return html;
 }
 
+// ================= VISIBILITY =================
+function updateVisibility(table) {
+  const idx = table.headers.findIndex(
+    h => h.toLowerCase().replace(/\s/g, '_') === 'players_alive'
+  );
+
+  if (idx === -1) return true;
+
+  let teamsAlive = 0;
+
+  table.rows.forEach(row => {
+    if ((parseInt(row[idx]) || 0) > 0) teamsAlive++;
+  });
+
+  return teamsAlive > 4; // 🔥 4 pe hide
+}
+
 // ================= RENDER =================
 function renderTable(table, shouldShow) {
-
   const container = document.getElementById('table-container');
 
   const idx = key => table.headers.findIndex(
@@ -49,102 +64,74 @@ function renderTable(table, shouldShow) {
   );
 
   const srNoIdx = idx('sr_no');
-  const teamLogoIdx = idx('team_logo');
-  const teamInitialIdx = idx('team_initial');
-  const playersAliveIdx = idx('players_alive');
-  const totalPointsIdx = idx('total_points');
-  const bluezoneIdx = idx('bluezone');
+  const logoIdx = idx('team_logo');
+  const nameIdx = idx('team_initial');
+  const aliveIdx = idx('players_alive');
+  const ptsIdx = idx('total_points');
+  const blueIdx = idx('bluezone');
 
-  // SORT
-  const sortedRows = [...table.rows].sort((a, b) => {
-    const aPoints = parseInt(a[totalPointsIdx]) || 0;
-    const bPoints = parseInt(b[totalPointsIdx]) || 0;
-    if (bPoints !== aPoints) return bPoints - aPoints;
+  const sorted = [...table.rows].sort((a, b) => {
+    const p = (parseInt(b[ptsIdx]) || 0) - (parseInt(a[ptsIdx]) || 0);
+    if (p) return p;
 
-    const aAlive = parseInt(a[playersAliveIdx]) || 0;
-    const bAlive = parseInt(b[playersAliveIdx]) || 0;
-    if (bAlive !== aAlive) return bAlive - aAlive;
+    const aAlive = (parseInt(b[aliveIdx]) || 0) - (parseInt(a[aliveIdx]) || 0);
+    if (aAlive) return aAlive;
 
-    const aRank = parseInt(a[srNoIdx]) || 0;
-    const bRank = parseInt(b[srNoIdx]) || 0;
-    return aRank - bRank;
+    return (parseInt(a[srNoIdx]) || 0) - (parseInt(b[srNoIdx]) || 0);
   });
 
-  const displayRows = sortedRows.map((row, i) => ({
-    rank: i + 1,
-    ...row
-  }));
-
   let html = `
-    <table class="table-alive">
-      <thead>
-        <tr>
-          <th>#</th>
-          <th class="team">TEAM</th>
-          <th>ALIVE</th>
-          <th>PTS</th>
-        </tr>
-      </thead>
-      <tbody>
+  <table class="table-alive">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th class="team">TEAM</th>
+        <th>ALIVE</th>
+        <th>PTS</th>
+      </tr>
+    </thead>
+    <tbody>
   `;
 
-  displayRows.forEach(row => {
-    const isBluezone = String(row[bluezoneIdx]).toLowerCase() === 'true';
+  sorted.forEach((row, i) => {
+    const isBlue = String(row[blueIdx]).toLowerCase() === 'true';
 
-    let rowClass = "";
-
-    // 🔥 ONLY FIRST LOAD ANIMATION
-    if (isVisible === null) {
-      rowClass = "animate-row";
-    }
-
-    if (isBluezone) {
-      rowClass += " bluezone-blink";
-    }
-
-    html += `<tr class="${rowClass.trim()}">`;
-    html += `<td>${row.rank}</td>`;
+    html += `<tr class="${isBlue ? 'bluezone-blink' : ''}">`;
+    html += `<td>${i + 1}</td>`;
 
     html += `<td class="team">
-      <img src="${row[teamLogoIdx]}" onerror="this.style.display='none'">
-      <span>${row[teamInitialIdx]}</span>
+      <img src="${row[logoIdx]}" onerror="this.style.display='none'">
+      <span>${row[nameIdx]}</span>
     </td>`;
 
-    html += `<td>${createAliveRectangles(parseInt(row[playersAliveIdx]) || 0)}</td>`;
-    html += `<td>${row[totalPointsIdx]}</td>`;
+    html += `<td>${createAliveRectangles(parseInt(row[aliveIdx]) || 0)}</td>`;
+    html += `<td>${row[ptsIdx]}</td>`;
     html += `</tr>`;
   });
 
   html += `</tbody></table>`;
 
-  // ================= ANIMATION CONTROL =================
+  // ================= SLIDE CONTROL =================
   if (isVisible === null) {
-    container.className = 'table-container slide-in';
+    container.className = 'table-container'; // ❌ no animation first time
   } 
   else if (shouldShow !== isVisible) {
     container.className = 'table-container ' + (shouldShow ? 'slide-in' : 'slide-out');
+
+    // 🔥 remove after hide
+    if (!shouldShow) {
+      setTimeout(() => {
+        container.innerHTML = "";
+      }, 600);
+    }
   }
 
   isVisible = shouldShow;
 
-  // ================= NO RE-RENDER =================
-  if (container.innerHTML !== html) {
+  // ================= UPDATE ONLY IF CHANGED =================
+  if (container.innerHTML !== html && shouldShow) {
     container.innerHTML = html;
   }
-}
-
-// ================= VISIBILITY =================
-function updateVisibility(table) {
-  const playersAliveIdx = table.headers.findIndex(
-    h => h.toLowerCase().replace(/\s/g, '_') === 'players_alive'
-  );
-
-  const teamsAlive = table.rows.filter(row => {
-    const alive = parseInt(row[playersAliveIdx]) || 0;
-    return alive > 0;
-  }).length;
-
-  return teamsAlive > 4;
 }
 
 // ================= MAIN =================
@@ -161,7 +148,6 @@ function fetchData() {
 
       const table = parseGvizTable(json);
 
-      // HIDE LOADING
       document.getElementById('loading').style.display = 'none';
       document.getElementById('error').style.display = 'none';
 
@@ -185,6 +171,5 @@ function fetchData() {
     });
 }
 
-// START
 fetchData();
 setInterval(fetchData, 2000);
