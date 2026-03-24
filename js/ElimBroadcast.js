@@ -48,14 +48,28 @@ function showCard(data) {
 async function playAnimation(data) {
   showCard(data);
 
+  const logo = document.querySelector(".team-logo");
+  const elimText = document.querySelector(".eliminated-text");
+  const teamName = document.querySelector(".team-name");
   const finishes = document.getElementById("teamFinishes");
 
-  await new Promise(r => setTimeout(r, 600));
+  // 🔥 Step by step reveal (same tera old style)
+  await new Promise(r => setTimeout(r, 200));
+  logo.classList.add("reveal");
 
+  await new Promise(r => setTimeout(r, 200));
+  elimText.classList.add("reveal");
+
+  await new Promise(r => setTimeout(r, 200));
+  teamName.classList.add("reveal");
+
+  await new Promise(r => setTimeout(r, 200));
   finishes.classList.add("reveal");
 
+  // Hold
   await new Promise(r => setTimeout(r, 2500));
 
+  // Exit
   const card = document.getElementById("elim-card");
   card.classList.add("slide-out");
 
