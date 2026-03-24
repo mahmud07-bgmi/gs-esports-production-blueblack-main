@@ -26,8 +26,10 @@ body, .table-alive, .alive-rectangles, .table-alive th, .table-alive td {
   position: absolute;
   right: 0;
   top: 0;
-}
 
+  /* 🔥 PERFORMANCE FIX */
+  will-change: transform;
+}
 /* animation alag class me */
 .table-container.slide-in {
   animation: slideInRight 0.8s ease forwards;
