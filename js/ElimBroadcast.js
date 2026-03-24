@@ -22,7 +22,7 @@ let prevAlive = {};
 let queue = [];
 let isAnimating = false;
 
-// Letter animation (same pro feel)
+// Letter animation
 function animateLetters(element, text, delay = 0) {
   element.innerHTML = "";
   text.split("").forEach((letter, i) => {
@@ -33,7 +33,7 @@ function animateLetters(element, text, delay = 0) {
   });
 }
 
-// Create Card (ADDED FINISHES)
+// Create Card
 function showCard(data) {
   const container = document.getElementById("elim-card-container");
 
@@ -73,7 +73,7 @@ function showCard(data) {
   `;
 }
 
-// 🔥 PROFESSIONAL ANIMATION (FULL UPGRADE)
+// Main Animation
 async function playAnimation(data) {
 
   showCard(data);
@@ -110,17 +110,10 @@ async function playAnimation(data) {
   divider.classList.add("grow");
   await new Promise(r => setTimeout(r, 300));
 
-  // NEW: finishes fade-in
-  finishes.style.opacity = "0";
-  finishes.style.transform = "translateY(10px)";
-  finishes.style.transition = "all 0.4s ease";
+  // 🔥 FINISHES ANIMATION (CSS driven)
+  finishes.classList.add("reveal");
 
-  await new Promise(r => setTimeout(r, 200));
-
-  finishes.style.opacity = "1";
-  finishes.style.transform = "translateY(0)";
-
-  // Hold with breathing
+  // Hold (breathing)
   card.classList.remove("slide-in");
   card.classList.add("breathing");
 
@@ -216,5 +209,8 @@ function fetchData() {
 }
 
 // Init
-fetchData();
-setInterval(fetchData, 2000);
+document.addEventListener("DOMContentLoaded", () => {
+  console.log("🔥 Pro Elimination System with Finishes Loaded");
+  fetchData();
+  setInterval(fetchData, 2000);
+});
