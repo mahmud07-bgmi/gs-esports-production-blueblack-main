@@ -1,6 +1,9 @@
 // CONFIG
 const SHEET_URL = 'https://docs.google.com/spreadsheets/d/1gyzPFtG3ubxzrqGEtQI-dr4aiExDU6Fx0tzFS2W4iG8/';
+let lastHTML = "";
+let isVisible = null;
 
+// ================= URL =================
 function getGvizUrl(sheetUrl) {
   const match = sheetUrl.match(/\/d\/([a-zA-Z0-9-_]+)/);
   if (!match) return null;
@@ -8,6 +11,7 @@ function getGvizUrl(sheetUrl) {
   return `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:json`;
 }
 
+// ================= PARSE =================
 function parseGvizTable(json) {
   if (!json.table) return { headers: [], rows: [] };
   const headers = json.table.cols.map(col => col.label);
@@ -17,9 +21,7 @@ function parseGvizTable(json) {
   return { headers, rows };
 }
 
-// 🔥 GLOBAL STATE (IMPORTANT FIX)
-let isVisible = null;
-
+// ================= ALIVE BARS =================
 function createAliveRectangles(count) {
   const total = 4;
   const isEliminated = count === 0;
@@ -37,9 +39,14 @@ function createAliveRectangles(count) {
   return html;
 }
 
+// ================= RENDER =================
 function renderTable(table, shouldShow) {
 
-  const idx = key => table.headers.findIndex(h => h.toLowerCase().replace(/\s/g, '_') === key);
+  const container = document.getElementById('table-container');
+
+  const idx = key => table.headers.findIndex(
+    h => h.toLowerCase().replace(/\s/g, '_') === key
+  );
 
   const srNoIdx = idx('sr_no');
   const teamLogoIdx = idx('team_logo');
@@ -48,23 +55,24 @@ function renderTable(table, shouldShow) {
   const totalPointsIdx = idx('total_points');
   const bluezoneIdx = idx('bluezone');
 
+  // SORT
   const sortedRows = [...table.rows].sort((a, b) => {
-    const aPoints = parseInt(a[totalPointsIdx], 10) || 0;
-    const bPoints = parseInt(b[totalPointsIdx], 10) || 0;
+    const aPoints = parseInt(a[totalPointsIdx]) || 0;
+    const bPoints = parseInt(b[totalPointsIdx]) || 0;
     if (bPoints !== aPoints) return bPoints - aPoints;
 
-    const aAlive = parseInt(a[playersAliveIdx], 10) || 0;
-    const bAlive = parseInt(b[playersAliveIdx], 10) || 0;
+    const aAlive = parseInt(a[playersAliveIdx]) || 0;
+    const bAlive = parseInt(b[playersAliveIdx]) || 0;
     if (bAlive !== aAlive) return bAlive - aAlive;
 
-    const aRank = parseInt(a[srNoIdx], 10) || 0;
-    const bRank = parseInt(b[srNoIdx], 10) || 0;
+    const aRank = parseInt(a[srNoIdx]) || 0;
+    const bRank = parseInt(b[srNoIdx]) || 0;
     return aRank - bRank;
   });
 
-  const displayRows = Array.from({ length: sortedRows.length }, (_, i) => ({
+  const displayRows = sortedRows.map((row, i) => ({
     rank: i + 1,
-    ...sortedRows[i],
+    ...row
   }));
 
   let html = `
@@ -83,61 +91,63 @@ function renderTable(table, shouldShow) {
   displayRows.forEach(row => {
     const isBluezone = String(row[bluezoneIdx]).toLowerCase() === 'true';
 
-let rowClass = "";
+    let rowClass = "";
 
-if (isVisible === null) {
-  rowClass = "animate-row"; // only first load animation
-}
+    // 🔥 ONLY FIRST LOAD ANIMATION
+    if (isVisible === null) {
+      rowClass = "animate-row";
+    }
 
-if (isBluezone) {
-  rowClass += " bluezone-blink";
-}
+    if (isBluezone) {
+      rowClass += " bluezone-blink";
+    }
 
-html += `<tr class="${rowClass.trim()}">`;    html += `<td>${row.rank}</td>`;
+    html += `<tr class="${rowClass.trim()}">`;
+    html += `<td>${row.rank}</td>`;
+
     html += `<td class="team">
       <img src="${row[teamLogoIdx]}" onerror="this.style.display='none'">
       <span>${row[teamInitialIdx]}</span>
     </td>`;
-    html += `<td>${createAliveRectangles(parseInt(row[playersAliveIdx], 10) || 0)}</td>`;
+
+    html += `<td>${createAliveRectangles(parseInt(row[playersAliveIdx]) || 0)}</td>`;
     html += `<td>${row[totalPointsIdx]}</td>`;
     html += `</tr>`;
   });
 
   html += `</tbody></table>`;
 
-  const container = document.getElementById('table-container');
-
-  // 🔥 MAIN FIX (NO REPEAT ANIMATION)
+  // ================= ANIMATION CONTROL =================
   if (isVisible === null) {
-    // first load → no animation
-    container.className = 'table-container';
+    container.className = 'table-container slide-in';
   } 
   else if (shouldShow !== isVisible) {
-    // only animate on change
     container.className = 'table-container ' + (shouldShow ? 'slide-in' : 'slide-out');
   }
 
-  // update state
   isVisible = shouldShow;
 
-  // update content
-  container.innerHTML = html;
+  // ================= NO RE-RENDER =================
+  if (container.innerHTML !== html) {
+    container.innerHTML = html;
+  }
 }
 
+// ================= VISIBILITY =================
 function updateVisibility(table) {
   const playersAliveIdx = table.headers.findIndex(
     h => h.toLowerCase().replace(/\s/g, '_') === 'players_alive'
   );
 
   const teamsAlive = table.rows.filter(row => {
-    const alive = parseInt(row[playersAliveIdx], 10) || 0;
+    const alive = parseInt(row[playersAliveIdx]) || 0;
     return alive > 0;
   }).length;
 
   return teamsAlive > 4;
 }
 
-// MAIN
+// ================= MAIN =================
 const gvizUrl = getGvizUrl(SHEET_URL);
 
 function fetchData() {
@@ -151,18 +161,16 @@ function fetchData() {
 
       const table = parseGvizTable(json);
 
-      // ✅ HIDE LOADING
+      // HIDE LOADING
       document.getElementById('loading').style.display = 'none';
       document.getElementById('error').style.display = 'none';
 
-      // ❌ No data case
       if (!table.headers.length || !table.rows.length) {
         document.getElementById('nodata').style.display = '';
         document.getElementById('table-root').style.display = 'none';
         return;
       }
 
-      // ✅ SHOW TABLE
       document.getElementById('nodata').style.display = 'none';
       document.getElementById('table-root').style.display = '';
 
@@ -170,7 +178,6 @@ function fetchData() {
       renderTable(table, shouldShow);
     })
     .catch(() => {
-      // ❌ ERROR SHOW
       document.getElementById('loading').style.display = 'none';
       document.getElementById('error').style.display = '';
       document.getElementById('error').textContent = 'Failed to load data';
@@ -178,5 +185,6 @@ function fetchData() {
     });
 }
 
+// START
 fetchData();
 setInterval(fetchData, 2000);
