@@ -13,171 +13,164 @@
   src: url('../font/Microgramma D Extended Bold.otf') format('opentype');
 }
 
+/* RESET */
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
 
-/* 🔥 BODY (MAIN BACKGROUND + FIRE EFFECT) */
+/* BODY */
 body {
   width: 1920px;
   height: 1080px;
   overflow: hidden;
-  font-family: 'D-DINCondensed', 'MicrogrammaD', sans-serif;
+  font-family: 'D-DINCondensed', sans-serif;
   position: relative;
 
-  background: linear-gradient(135deg, #2b0000 0%, #4b0000 50%, #1a0000 100%);
+  background: linear-gradient(180deg, #6b0000 0%, #ff7a00 100%);
 }
 
-/* 🔥 ORANGE GLOW */
+/* GLOW EFFECT */
 body::before {
   content: '';
   position: absolute;
-  bottom: 0;
-  left: 0;
   width: 100%;
-  height: 45%;
-  background: linear-gradient(
-    to top,
-    rgba(255, 120, 0, 0.9),
-    rgba(255, 80, 0, 0.6),
-    transparent
-  );
-  z-index: 1;
+  height: 100%;
+  background:
+    radial-gradient(circle at 50% 20%, rgba(255,180,0,0.6), transparent 60%),
+    radial-gradient(circle at 20% 80%, rgba(255,100,0,0.4), transparent 60%),
+    radial-gradient(circle at 80% 70%, rgba(255,0,0,0.3), transparent 60%);
+  z-index: 0;
 }
 
-/* 🔥 FIRE IMAGE (IMPORTANT) */
+/* CURVE DESIGN */
 body::after {
   content: '';
   position: absolute;
   bottom: 0;
-  left: 0;
   width: 100%;
-  height: 45%;
-  background: url('../assets/burn.png') bottom center / cover no-repeat;
-  z-index: 2;
-  opacity: 0.9;
-  animation: heatWave 4s ease-in-out infinite;
+  height: 260px;
+  background: linear-gradient(180deg, #ff6a00, #ff2d00);
+  border-top-left-radius: 70% 100%;
+  border-top-right-radius: 70% 100%;
+  z-index: 0;
 }
 
-/* 🔥 HEAT ANIMATION */
-@keyframes heatWave {
-  0% { transform: translateY(0); }
-  50% { transform: translateY(-3px); }
-  100% { transform: translateY(0); }
-}
-
-/* 🔥 CONTAINER FIX */
+/* CONTAINER */
 .container {
-  width: 1920px;
-  height: 1080px;
+  width: 100%;
+  height: 100%;
+  position: relative;
+  z-index: 1;
   display: flex;
   flex-direction: column;
-  position: relative;
-  z-index: 5;
 }
 
-/* 🔥 HEADER */
+/* HEADER */
 .header {
   text-align: center;
-  padding: 40px 0;
+  padding-top: 40px;
 }
 
 .header h1 {
   font-family: 'AmericanCaptain';
-  font-size: 7rem;
+  font-size: 120px;
   letter-spacing: 12px;
-  background: linear-gradient(90deg, #FFD700, #FFA500);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+  text-transform: uppercase;
+  color: #ffb300;
+  text-shadow: 0 5px 15px rgba(0,0,0,0.7);
 }
 
-/* 🔥 LAYOUT */
+/* MAIN */
 .main-content {
   flex: 1;
   display: flex;
-  padding: 0 50px 40px;
   gap: 30px;
+  padding: 40px;
 }
 
+/* SIDES */
 .left-side,
 .right-side {
   flex: 1;
   display: flex;
   flex-direction: column;
+  gap: 20px;
 }
 
-/* 🔥 FIRST PLACE */
+/* FIRST PLACE */
 .first-place-block {
-  background: linear-gradient(135deg, #5a0000, #2a0000);
-  border: 3px solid #FFD700;
+  background: linear-gradient(135deg, #8b0000, #3b0000);
+  border: 3px solid #ffb300;
   padding: 20px;
 }
 
-/* 🔥 TABLE BLOCK */
-.second-block,
-.third-block {
-  background: rgba(0, 0, 0, 0.6);
-  border: 2px solid #8b0000;
-  flex: 1;
+.first-place-team-name {
+  font-size: 36px;
+  font-weight: bold;
+  color: white;
 }
 
-/* 🔥 TABLE */
+/* TABLE BLOCK */
+.second-block,
+.third-block {
+  background: linear-gradient(135deg, #7a0000, #2a0000);
+  border: 2px solid #ff6a00;
+  flex: 1;
+  overflow: hidden;
+}
+
+/* TABLE */
 table {
   width: 100%;
   border-collapse: collapse;
-  table-layout: fixed;
 }
 
-/* 🔥 HEADER */
+/* HEADER */
 thead th {
-  background: linear-gradient(180deg, #8b0000, #4b0000);
+  background: #ff6a00;
   color: white;
-  padding: 12px;
   font-size: 18px;
+  padding: 10px;
 }
 
-/* 🔥 ROW */
+/* ROWS */
 tbody tr {
-  background: rgba(90, 0, 0, 0.9);
+  background: #5a0000;
 }
 
-/* 🔥 CELL */
+tbody tr:nth-child(even) {
+  background: #6a0000;
+}
+
+/* CELLS */
 tbody td {
   padding: 12px;
   text-align: center;
   color: white;
-  height: 52px;
+  font-size: 18px;
 }
 
-/* 🔥 TEAM CELL */
+/* TEAM */
 .team-cell {
   display: flex;
   align-items: center;
   gap: 10px;
 }
 
-/* 🔥 LOGO */
 .team-cell img {
-  width: 30px;
-  height: 30px;
-  border: 2px solid #FFD700;
+  height: 25px;
 }
 
-/* 🔥 POINTS */
+/* POINTS */
 .total-points {
-  color: #FFD700;
-  font-weight: 900;
+  color: #ffb300;
+  font-weight: bold;
 }
 
-/* 🔥 RANK */
+/* RANK */
 .rank {
-  font-weight: 900;
-}
-
-/* 🔥 WWCD */
-.wwcd-icon {
-  height: 20px;
-  margin-right: 5px;
+  color: #ffb300;
+  font-weight: bold;
 }
