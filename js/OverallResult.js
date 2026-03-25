@@ -115,13 +115,13 @@ function updateData() {
       document.head.removeChild(script);
     }
     
-    // Restore original  if it existed
+    // Restore original function if it existed
     if (originalSetResponse) {
       window.google.visualization.Query.setResponse = originalSetResponse;
     }
   };
   
- script.onerror = function() {
+  script.onerror = function() {
     console.error('Error loading Google Sheets data');
     if (script.parentNode) {
       document.head.removeChild(script);
@@ -170,30 +170,30 @@ function renderTable(tableId, teams, startRank) {
   tbody.innerHTML = teams.map((team, index) => {
     const rank = startRank + index + 1;
     
+    // Debug WWCD data
+    console.log(`Team: ${team.team_name}, WWCD: ${team.wwcd}, Type: ${typeof team.wwcd}`);
+    
+    // Handle WWCD display - check for both number and string values
     let wwcdDisplay = '';
     const wwcdValue = team.wwcd;
     
     if (wwcdValue && (wwcdValue > 0 || wwcdValue === '1' || wwcdValue === 1)) {
       wwcdDisplay = `<img src="https://i.postimg.cc/TP16VCjK/2007819-200.png" class="wwcd-icon"> x${wwcdValue}`;
-    } else {
+    } else if (wwcdValue === 0 || wwcdValue === '0' || !wwcdValue) {
       wwcdDisplay = '0';
+    } else {
+      wwcdDisplay = wwcdValue || '0';
     }
     
     return `
       <tr>
         <td class="rank">${rank}</td>
-
-        <!-- 🔥 FIXED TEAM CELL -->
-        <td class="team-col">
+        <td>
           <div class="team-cell">
-            <img src="${team.team_logo}" 
-                 alt="${team.team_name}" 
-                 onerror="this.style.display='none'">
-            
-            <span class="team-name">${team.team_name}</span>
+            <img src="${team.team_logo}" alt="${team.team_name}" onerror="this.style.display='none'">
+            <span>${team.team_name}</span>
           </div>
         </td>
-
         <td>${wwcdDisplay}</td>
         <td>${team.position_points || 0}</td>
         <td>${team.finish_points || 0}</td>
